@@ -1911,16 +1911,22 @@ void model_print_timings(struct model_context* ctx) {
   fprintf(stderr, "%s:        load time = %8.2f ms\n", __func__, ctx->t_load_us / 1000.0);
   fprintf(stderr, "%s:      sample time = %8.2f ms / %5d runs   (%8.2f ms per token)\n", __func__,
           1e-3 * ctx->t_sample_us, n_sample, 1e-3 * ctx->t_sample_us / n_sample);
-  fprintf(stderr, "%s: prompt eval time = %8.2f ms / %5d tokens (%8.2f ms per token)\n", __func__,
-          1e-3 * ctx->t_p_eval_us, n_p_eval, 1e-3 * ctx->t_p_eval_us / n_p_eval);
-  fprintf(stderr, "%s:        eval time = %8.2f ms / %5d runs   (%8.2f ms per token)\n", __func__,
-          1e-3 * ctx->t_eval_us, n_eval, 1e-3 * ctx->t_eval_us / n_eval);
-  fprintf(stderr, "%s:       total time = %8.2f ms\n", __func__, (t_end_us - ctx->t_start_us) / 1000.0);
+  fprintf(stderr, "%s: prompt eval time = %8.2f ms / %5d tokens (%8.2f ms per token)  (%8.2f tps)\n", __func__,
+          1e-3 * ctx->t_p_eval_us, n_p_eval, 1e-3 * ctx->t_p_eval_us / n_p_eval,
+          1e6 * n_p_eval / ctx->t_p_eval_us);
+  fprintf(stderr, "%s:        eval time = %8.2f ms / %5d runs   (%8.2f ms per token) (%8.2f tps)\n", __func__,
+          1e-3 * ctx->t_eval_us, n_eval, 1e-3 * ctx->t_eval_us / n_eval, 
+          1e6 * n_eval / ctx->t_eval_us);
+  fprintf(stderr, "%s:       total time = %8.2f ms / %5d tokens\n", __func__, 
+    (t_end_us - ctx->t_start_us) / 1000.0,
+    n_p_eval + n_eval);
   fflush(stderr);
+#if 0 // too verbose
   printf("========== eval time log of each prediction ==========\n");
   for (int i = 0; i < ctx->eval_times.size(); ++i) {
     printf("prediction %3d, time: %.2fms\n", i, ctx->eval_times[i] / 1000.0f);
   }
+#endif
   fflush(stdout);
 }
 
